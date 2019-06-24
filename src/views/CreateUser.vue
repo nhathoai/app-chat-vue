@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="box">
-      <h1>Login</h1>
+      <h1>New user</h1>
       <label for="inp" class="inp" v-bind:class="{'err' : errors.has('email')}">
         <input type="text" name="email" placeholder=" " v-validate="'required'" v-model="email" @input="handleChange" @keyup.enter="handleLogin">
         <span class="label">What's your name?</span>
@@ -14,9 +14,9 @@
       </label>
       <p class="error" v-if="errors.has('password')">{{errors.first('password')}}</p>
 
+      <p style="text-align: right">You want <router-link to="/login">Login</router-link> </a> here</p>
       <p class="err" >{{ errMess }}</p>
-      <p style="text-align: right">New member?     <router-link to="/create">Register</router-link> </a> here</p>
-      <button class="btn-info" v-on:click="handleLogin" >Login</button>
+      <button class="btn-info" v-on:click="handleLogin" >Create</button>
     </div>
     <LoadingTemplate v-bind:hidden="hidden" />  
   </div>
