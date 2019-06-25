@@ -3,20 +3,20 @@
     <div class="box">
       <h1>New user</h1>
       <label for="inp" class="inp" v-bind:class="{'err' : errors.has('email')}">
-        <input type="text" name="email" placeholder=" " v-validate="'required'" v-model="email" @input="handleChange" @keyup.enter="handleLogin">
+        <input type="text" name="email" placeholder=" " v-validate="'required'" v-model="email" @input="handleChange" @keyup.enter="handleCreateUser">
         <span class="label">What's your name?</span>
       </label>
       <p class="error" v-if="errors.has('email')">{{errors.first('email')}}</p>
 
       <label for="inp" class="inp" v-bind:class="{'err' : errors.has('password')}">
-        <input type="password" name="password" placeholder=" " v-validate="'required'" v-model="password" @input="handleChange" @keyup.enter="handleLogin"> 
+        <input type="password" name="password" placeholder=" " v-validate="'required'" v-model="password" @input="handleChange" @keyup.enter="handleCreateUser"> 
         <span class="label">Password</span>
       </label>
       <p class="error" v-if="errors.has('password')">{{errors.first('password')}}</p>
 
       <p style="text-align: right">You want <router-link to="/login">Login</router-link> </a> here</p>
       <p class="err" >{{ errMess }}</p>
-      <button class="btn-info" v-on:click="handleLogin" >Create</button>
+      <button class="btn-info" v-on:click="handleCreateUser" >Create</button>
     </div>
     <LoadingTemplate v-bind:hidden="hidden" />  
   </div>
@@ -25,8 +25,8 @@
 <script>
 import fb, { functions } from 'firebase';
 import LoadingTemplate from '@/components/Loading.vue'
-import _lo from 'lodash'
-import { debuglog } from 'util';
+import _ from 'lodash'
+import Swal from 'sweetalert2';
 
 export default {
   name: "login",
@@ -43,34 +43,64 @@ export default {
       errEmail: true
     };
   },
+  created() {
+    const _this = this;
+    this.fbData = [];
+
+    fb.firestore().collection('users').get().then(function (datas, index){
+      datas.docs.forEach(function (data, index) {
+        _this.fbData.push(data.data());
+      });
+    });
+  },
   methods: {
-    handleLogin: function() {
+    handleCreateUser: function() {
+
       const _this = this
       this.hidden = true;
-      var check = this.$validator.validateAll().then(function (rs){
-         if(!rs) {
-           _this.hidden = false;
-           return;
-         }
-        _this.login();
-      });
+      var rs  = _.find(this.fbData, {'username': _this.email, 'password': _this.password});
+      if(rs) {
+        this.errMess = "Account already exists!!!";
+        this.hidden = false;
+        return;
+      }
+      _this.create();
+
     },
     handleChange: function(){
       this.errMess = '';
     },
-    login: _lo.debounce(function(){
+    create: _.debounce(function(){
       const _this = this;
-      fb.auth()
-          .signInWithEmailAndPassword(this.email, this.password)
-          .then(function (data, err){
-            console.log("vào rồi")
-          })
-          .catch(function(error) {
-            _this.hidden = false;
-            _this.errMess = "User or password in incorrect";
-            // _this.email = _this.password = '';
-          })
+
+      fb.firestore().collection("users").doc(this.createId()).set({
+        username: _this.email,
+        password: _this.password
+      })
+      .then(function() {
+          _this.hidden = true;
+          Swal.fire({
+          type: 'success',
+          title: 'Register Success',
+          showConfirmButton: false,
+          timer: 2000
+        }).then(
+          (result) => {
+             _this.$router.push('/login')
+          }
+        )
+      })
+      .catch(function(error) {
+          console.error("Error writing document: ", error);
+      });
+
     }, 500),
+    createId: function(){
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
   }
 };
 </script>

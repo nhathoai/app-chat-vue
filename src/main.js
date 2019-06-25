@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import firebase from 'firebase/app'
-import _lo from 'vue-lodash'
+import _ from 'vue-lodash'
 
 Vue.config.productionTip = false
 
