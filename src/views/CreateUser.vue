@@ -2,17 +2,19 @@
   <div class="container">
     <div class="box">
       <h1>New user</h1>
-      <label for="inp" class="inp" v-bind:class="{'err' : errors.has('email')}">
-        <input type="text" name="email" placeholder=" " v-validate="'required'" v-model="email" @input="handleChange" @keyup.enter="handleCreateUser">
+      <label for="inp" class="inp" v-bind:class="{'err' : errEmail}">
+        <input type="text" name="email" placeholder=" " v-model="email" @input="handleChange" @keyup.enter="handleCreateUser">
+        <!-- <input type="text" name="email" placeholder=" " v-validate="'required'" v-model="email" @input="handleChange" @keyup.enter="handleCreateUser"> -->
         <span class="label">What's your name?</span>
       </label>
-      <p class="error" v-if="errors.has('email')">{{errors.first('email')}}</p>
+      <p class="error" v-if="errPass">The email field is required.</p>
 
-      <label for="inp" class="inp" v-bind:class="{'err' : errors.has('password')}">
-        <input type="password" name="password" placeholder=" " v-validate="'required'" v-model="password" @input="handleChange" @keyup.enter="handleCreateUser"> 
+      <label for="inp" class="inp" v-bind:class="{'err' : errPass}">
+        <input type="password" name="password" placeholder=" " v-model="password" @input="handleChange" @keyup.enter="handleCreateUser"> 
+        <!-- <input type="password" name="password" placeholder=" " v-validate="'required'" v-model="password" @input="handleChange" @keyup.enter="handleCreateUser">  -->
         <span class="label">Password</span>
       </label>
-      <p class="error" v-if="errors.has('password')">{{errors.first('password')}}</p>
+      <p class="error" v-if="errPass">The password field is required.</p>
 
       <p style="text-align: right">You want <router-link to="/login">Login</router-link> </a> here</p>
       <p class="err" >{{ errMess }}</p>
@@ -35,12 +37,12 @@ export default {
   },
   data() {
     return {
-      message: "",
       email: "",
       password: "",
       errMess: '',
       hidden: false,
-      errEmail: true
+      errEmail: false,
+      errPass: false
     };
   },
   created() {
@@ -58,17 +60,28 @@ export default {
 
       const _this = this
       this.hidden = true;
+      
+      if(this.email == "" && this.password == ""){
+        this.errPass = true;
+        this.errEmail = true;
+        this.hidden = false;
+        return;
+      }
+      
       var rs  = _.find(this.fbData, {'username': _this.email, 'password': _this.password});
       if(rs) {
         this.errMess = "Account already exists!!!";
         this.hidden = false;
         return;
       }
+
       _this.create();
 
     },
     handleChange: function(){
       this.errMess = '';
+      this.errPass = false;
+      this.errEmail = false;
     },
     create: _.debounce(function(){
       const _this = this;
