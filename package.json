@@ -7,8 +7,11 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
     "core-js": "^2.6.5",
+    "es6-promise": "^4.2.8",
     "firebase": "^6.2.0",
+    "isomorphic-fetch": "^2.2.1",
     "vee-validate": "^2.2.11",
     "vue": "^2.6.10",
     "vue-lodash": "^2.0.2",

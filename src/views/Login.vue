@@ -43,6 +43,16 @@ export default {
       errEmail: true
     };
   },
+  created() {
+    const _this = this;
+    this.fbData = [];
+
+    fb.firestore().collection('users').get().then(function (datas, index){
+      datas.docs.forEach(function (data, index) {
+        _this.fbData.push(data.data());
+      });
+    });
+  },
   methods: {
     handleLogin: function() {
       const _this = this
@@ -60,14 +70,21 @@ export default {
     },
     login: _lo.debounce(function(){
       const _this = this;
+
+      var rs  = _.find(this.fbData, {'username': _this.email, 'password': _this.password});
+      if(rs) {
+         this.$router.push('/chat')
+      }else{
+        _this.hidden = false;
+        _this.errMess = "User or password in incorrect";
+
+      }
       fb.auth()
           .signInWithEmailAndPassword(this.email, this.password)
           .then(function (data, err){
             console.log("vào rồi")
           })
           .catch(function(error) {
-            _this.hidden = false;
-            _this.errMess = "User or password in incorrect";
             // _this.email = _this.password = '';
           })
     }, 500),

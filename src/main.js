@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import firebase from 'firebase/app'
 import _ from 'vue-lodash'
+// import '@babel/polyfill'
 
 Vue.config.productionTip = false
 

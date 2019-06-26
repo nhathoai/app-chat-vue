@@ -91,7 +91,7 @@ export default {
         password: _this.password
       })
       .then(function() {
-          _this.hidden = true;
+          _this.hidden = false;
           Swal.fire({
           type: 'success',
           title: 'Register Success',

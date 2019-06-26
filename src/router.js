@@ -4,6 +4,7 @@ import Login from './views/Login.vue'
 import VeeValidate from 'vee-validate';
 import CreateUser from './views/CreateUser.vue'
 import Swal from 'vue-sweetalert2';
+import Chat from './views/Chat.vue'
 
 Vue.use(Router)
 Vue.use(VeeValidate)
@@ -22,6 +23,11 @@ export default new Router({
       path: '/create',
       name: 'createUser',
       component: CreateUser
+    },
+    {
+      path: '/chat',
+      name: 'chat',
+      component: Chat
     },
   ]
 })

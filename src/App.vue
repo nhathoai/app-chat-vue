@@ -11,6 +11,8 @@
 // @ is an alias to /src
 </script>
 <style>
+/* @import url('https://fonts.googleapis.com/css?family=Arvo:400,700,700i&display=swap'); */
+@import url('https://fonts.googleapis.com/css?family=Fira+Sans&display=swap');
 body{
   margin: 0;
   width: 100%;
@@ -19,7 +21,7 @@ body{
   font-size: 11px;
 }
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Fira Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
