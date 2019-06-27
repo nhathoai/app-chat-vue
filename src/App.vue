@@ -33,4 +33,7 @@ body{
   font-size: .8rem;
   color: red;
 }
+.err-inp{
+       border-color: red!important;
+}
 </style>

@@ -54,6 +54,7 @@ export default {
         _this.fbData.push(data.data());
       });
     });
+
   },
   methods: {
     handleCreateUser: function() {
@@ -158,9 +159,7 @@ export default {
     font-size: 2rem;
     margin-top: -1rem;
   }
-  .inp.err{
-    color: red;
-  }
+  
   .inp.err input{
     border-bottom: 1px solid red;
   }
