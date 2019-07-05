@@ -16,12 +16,12 @@
             </ul>
         </div>
         <div class="box-center">
-            <div class="display-content">
-                <h2>trò chuyện bốn phương</h2>
-                <hr>
+            <h2>{{nameRoomActive}}</h2>
+            <hr>
+            <div class="display-content" ref="eleContent">
                 <div v-html = "html"></div>
             </div>
-            <div contenteditable="true" class="box-chat">
+            <div contenteditable="true" class="box-chat" v-on:keyup.13="saveMess">
             </div>
         </div>
         <transition name="fade">
@@ -75,7 +75,8 @@ import { debuglog } from 'util';
                 nameRoom: '',
                 datas: [],
                 idRoom: '',
-                html: ''
+                html: '',
+                nameRoomActive:''
             };
         },
         methods: {
@@ -125,15 +126,34 @@ import { debuglog } from 'util';
                 )
             },
             showRoomChat(e, binding){
-               
+                debugger
+                this.html = "";
                 var _this = this;
                 var el = e.target;
                 this.idRoom = el.dataset.value;
+                this.nameRoomActive = el.innerText;
                 var rootRef = fb.database().ref('rooms/' + this.idRoom + '/messages');
+
                 rootRef.once("value", function(snapshot) {
                     const datas = snapshot.val();
-                    _this.html = `<div><span>${datas.obj.name}</span><a>${datas.obj.time}</a><span>${datas.obj.mess}</span></div>`;
+                    if(!datas) return;
+                    const keys = Object.keys(datas);
+                    for (const key of keys) {
+                        _this.html += `<div class="item-chat"><span class="name">${datas[key].name}</span><a class="time">${datas[key].time}</a><div>${datas[key].mess}</div></div>`;
+                    }
+                    
                 })
+            },
+            saveMess(e){
+                var ele = e.target;
+                var rootRef = fb.database().ref();
+                var storesRef = rootRef.child('rooms/' + this.idRoom + "/messages");
+                var newStoreRef = storesRef.push();
+                newStoreRef.set({
+                    "mess": ele.innerHTML,
+                    "name": "hoài",
+                    "time": new Date().toLocaleString()
+                });
             }
         },
         created : function() {
@@ -151,12 +171,42 @@ import { debuglog } from 'util';
                     _this.datas.push(ob);
                 }
             });
-        }
+        },
+        updated: function(){
+            this.$refs.eleContent.scrollTo(0, this.$refs.eleContent.offsetHeight);
+        },
+        
     };
 </script>
 
 <style scoped>
+    .display-content{
+        flex: 1;
+        overflow-y: auto;
+            border-top: 1px solid grey;
+    }
+    >>> .item-chat{
+        text-align: left;
+        padding-left: 5px;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        /* border-bottom: 1px solid gray */
+    }
+
+    >>> .item-chat .name{
+        font-weight: 700;
+    }
+
+    >>> .item-chat .name:hover{
+        text-decoration: underline;
+        cursor: pointer;
+    }
     
+    >>> .item-chat .time{
+        padding-left: 1rem;
+        font-size: .7rem
+    }
+
     .fade-enter-active, .fade-leave-active {
         transition: opacity .5s;
     }
@@ -302,18 +352,21 @@ import { debuglog } from 'util';
         background-color: #F5F5F5;
     }
 
+    .display-content::-webkit-scrollbar-track ,
     .box-chat::-webkit-scrollbar-track {
         -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
         border-radius: 0px;
         background-color: #F5F5F5;
     }
 
+    .display-content::-webkit-scrollbar,
     .box-chat::-webkit-scrollbar {
         width: 12px;
         background-color: #F5F5F5;
     }
 
-    .box-chat::-webkit-scrollbar-thumb {
+     .display-content::-webkit-scrollbar-thumb,
+     .box-chat::-webkit-scrollbar-thumb {
         border-radius: 0px;
         -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
         background-color: #607D8B;
