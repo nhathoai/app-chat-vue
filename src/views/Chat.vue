@@ -18,10 +18,10 @@
         <div class="box-center">
             <h2>{{nameRoomActive}}</h2>
             <hr>
-            <div class="display-content" ref="eleContent">
+            <div class="display-content" ref="eleContent" >
                 <div v-html = "html"></div>
             </div>
-            <div contenteditable="true" class="box-chat" v-on:keyup.13="saveMess">
+            <div contenteditable="true" class="box-chat" v-on:keydown="saveMess">
             </div>
         </div>
         <transition name="fade">
@@ -126,7 +126,6 @@ import { debuglog } from 'util';
                 )
             },
             showRoomChat(e, binding){
-                debugger
                 this.html = "";
                 var _this = this;
                 var el = e.target;
@@ -146,14 +145,22 @@ import { debuglog } from 'util';
             },
             saveMess(e){
                 var ele = e.target;
-                var rootRef = fb.database().ref();
-                var storesRef = rootRef.child('rooms/' + this.idRoom + "/messages");
-                var newStoreRef = storesRef.push();
-                newStoreRef.set({
-                    "mess": ele.innerHTML,
-                    "name": "hoài",
-                    "time": new Date().toLocaleString()
-                });
+                if(e.keyCode == 13 && e.ctrlKey){
+                    document.execCommand('insertHTML', false, '<br><br>');
+                    // prevent the default behaviour of return key pressed
+                    return false;
+                }
+                if(e.keyCode == 13){
+                    var rootRef = fb.database().ref();
+                    var storesRef = rootRef.child('rooms/' + this.idRoom + "/messages");
+                    var newStoreRef = storesRef.push();
+                    newStoreRef.set({
+                        "mess": ele.innerHTML,
+                        "name": "hoài",
+                        "time": new Date().toLocaleString()
+                    });
+                    ele.innerHTML = "";
+                }
             }
         },
         created : function() {
